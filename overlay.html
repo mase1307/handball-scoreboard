@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin:0;
+  background:transparent;
+  font-family:'Oswald', sans-serif;
+}
+.scoreboard {
+  position:absolute;
+  bottom:30px;
+  left:30px;
+  background:rgba(0,0,0,0.75);
+  color:white;
+  padding:16px 28px;
+  border-radius:14px;
+  font-size:42px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+.team { min-width:120px; text-align:center; }
+.time { font-size:36px; opacity:0.9; }
+</style>
+
+</head>
+<body>
+
+<div class="scoreboard" id="sb">Lädt…</div>
+
+<script>
+const CSV_URL = "HIER_DEIN_CSV_LINK";
+
+async function update(){
+  const r = (await (await fetch(CSV_URL)).text()).split("\n");
+
+  const heim = r[0].split(",")[1];
+  const gast = r[1].split(",")[1];
+  const sec = parseInt(r[2].split(",")[1]);
+  const heimName = r[4].split(",")[1];
+  const gastName = r[5].split(",")[1];
+
+  const m = Math.floor(sec/60);
+  const s = String(sec%60).padStart(2,"0");
+
+  document.getElementById("sb").innerHTML =
+    `<div class="team">${heimName}</div>
+     <div>${heim} : ${gast}</div>
+     <div class="team">${gastName}</div>
+     <div class="time">${m}:${s}</div>`;
+}
+
+update();
+setInterval(update, 2000);
+</script>
+
+</body>
+</html>
