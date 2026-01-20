@@ -34,7 +34,7 @@ body {
 <div class="scoreboard" id="sb">Lädt…</div>
 
 <script>
-const CSV_URL = "HIER_DEIN_CSV_LINK";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/1qm2SLfdhCxYwzCgZGfjbnjsjZJSA12vql4iakCvCaTI/edit?usp=sharing";
 
 async function update(){
   const r = (await (await fetch(CSV_URL)).text()).split("\n");
@@ -61,3 +61,4 @@ setInterval(update, 2000);
 
 </body>
 </html>
+
