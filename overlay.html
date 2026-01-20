@@ -17,22 +17,22 @@ body {
   top: 40px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.75);
   padding: 20px 40px;
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
-  gap: 30px;
-  font-size: 32px;
+  gap: 28px;
 }
 
 .team {
-  min-width: 160px;
+  min-width: 180px;
   text-align: center;
+  font-size: 28px;
 }
 
 .score {
-  font-size: 48px;
+  font-size: 52px;
   font-weight: bold;
 }
 
@@ -46,15 +46,16 @@ body {
 <body>
 
 <div id="scoreboard">
-  <div class="team" id="home">HOME</div>
+  <div class="team" id="home">HEIM</div>
   <div class="score" id="scoreHome">0</div>
   <div id="timer">00:00</div>
   <div class="score" id="scoreAway">0</div>
-  <div class="team" id="away">AWAY</div>
+  <div class="team" id="away">GAST</div>
 </div>
 
 <script>
-const SHEET_URL = "https://opensheet.elk.sh/1qm2SLfdhCxYwzCgZGfjbnjsjZJSA12vql4iakCvCaTI/Sheet1";
+const SHEET_URL =
+"https://opensheet.elk.sh/1qm2SLfdhCxYwzCgZGfjbnjsjZJSA12vql4iakCvCaTI/Sheet1";
 
 async function loadData() {
   const res = await fetch(SHEET_URL);
