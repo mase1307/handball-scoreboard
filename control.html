@@ -14,14 +14,14 @@ body {
 
 button {
   font-size: 22px;
-  padding: 15px 25px;
-  margin: 10px;
+  padding: 14px 22px;
+  margin: 8px;
 }
 
 input {
   font-size: 20px;
-  padding: 5px;
-  width: 140px;
+  padding: 6px;
+  width: 160px;
   text-align: center;
 }
 </style>
@@ -31,41 +31,42 @@ input {
 
 <h2>Teamnamen</h2>
 <input id="home" placeholder="Heim">
-<input id="away" placeholder="Gast">
-<br>
-<button onclick="save()">Namen speichern</button>
+<input id="away" placeholder="Gast"><br>
+<button onclick="saveTeams()">Speichern</button>
 
 <h2>Score</h2>
 <button onclick="add('scoreHome', 1)">+ Heim</button>
-<button onclick="add('scoreHome', -1)">- Heim</button>
-<br>
+<button onclick="add('scoreHome', -1)">- Heim</button><br>
 <button onclick="add('scoreAway', 1)">+ Gast</button>
 <button onclick="add('scoreAway', -1)">- Gast</button>
 
-<h2>Uhr (MM:SS)</h2>
+<h2>Uhr</h2>
 <div id="clock">00:00</div>
 <button onclick="start()">Start</button>
 <button onclick="stop()">Stop</button>
 <button onclick="reset()">Reset</button>
 
 <script>
-const SHEET_API = "https://script.google.com/macros/s/AKfycbxPLACEHOLDER/exec";
+const API =
+"https://script.google.com/macros/s/AKfycbweufiBgzUNZIDBCH4ZmPstulVWuqu3UWIt6JkAnBngjpmJ8G9xykRW8OF_EynL77zB/exec";
 
 let time = 0;
 let interval = null;
 
-function updateClock() {
-  const m = String(Math.floor(time / 60)).padStart(2, "0");
-  const s = String(time % 60).padStart(2, "0");
-  document.getElementById("clock").innerText = `${m}:${s}`;
-  send({ time: `${m}:${s}` });
+function formatTime() {
+  const m = String(Math.floor(time / 60)).padStart(2,"0");
+  const s = String(time % 60).padStart(2,"0");
+  return `${m}:${s}`;
+}
+
+function tick() {
+  time++;
+  document.getElementById("clock").innerText = formatTime();
+  send({ time: formatTime() });
 }
 
 function start() {
-  if (!interval) interval = setInterval(() => {
-    time++;
-    updateClock();
-  }, 1000);
+  if (!interval) interval = setInterval(tick, 1000);
 }
 
 function stop() {
@@ -75,14 +76,15 @@ function stop() {
 
 function reset() {
   time = 0;
-  updateClock();
+  document.getElementById("clock").innerText = "00:00";
+  send({ time: "00:00" });
 }
 
 function add(field, value) {
   send({ field, value });
 }
 
-function save() {
+function saveTeams() {
   send({
     home: document.getElementById("home").value,
     away: document.getElementById("away").value
@@ -90,7 +92,7 @@ function save() {
 }
 
 function send(data) {
-  fetch(SHEET_API, {
+  fetch(API, {
     method: "POST",
     body: JSON.stringify(data)
   });
