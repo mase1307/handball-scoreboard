@@ -2,57 +2,100 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Handball Control</title>
+<title>Scoreboard Control</title>
+
 <style>
 body {
-  background:#111;
-  color:white;
-  font-family:Arial, sans-serif;
-  text-align:center;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: white;
+  text-align: center;
 }
+
 button {
-  width:90%;
-  font-size:32px;
-  padding:20px;
-  margin:10px 0;
-  border:none;
-  border-radius:10px;
+  font-size: 22px;
+  padding: 15px 25px;
+  margin: 10px;
 }
-.heim { background:#c00000; }
-.gast { background:#000000; }
-.start { background:#2ecc71; }
-.stop { background:#e74c3c; }
-.reset { background:#555; }
+
+input {
+  font-size: 20px;
+  padding: 5px;
+  width: 140px;
+  text-align: center;
+}
 </style>
 </head>
+
 <body>
 
-<h1>SPIELSTEUERUNG</h1>
+<h2>Teamnamen</h2>
+<input id="home" placeholder="Heim">
+<input id="away" placeholder="Gast">
+<br>
+<button onclick="save()">Namen speichern</button>
 
-<button class="heim" onclick="goal(1)">TOR HEIM +</button>
-<button class="gast" onclick="goal(2)">TOR GAST +</button>
+<h2>Score</h2>
+<button onclick="add('scoreHome', 1)">+ Heim</button>
+<button onclick="add('scoreHome', -1)">- Heim</button>
+<br>
+<button onclick="add('scoreAway', 1)">+ Gast</button>
+<button onclick="add('scoreAway', -1)">- Gast</button>
 
-<button class="start" onclick="run(1)">▶ UHR START</button>
-<button class="stop" onclick="run(0)">⏸ UHR STOP</button>
-
-<button class="reset" onclick="resetGame()">↺ RESET</button>
+<h2>Uhr (MM:SS)</h2>
+<div id="clock">00:00</div>
+<button onclick="start()">Start</button>
+<button onclick="stop()">Stop</button>
+<button onclick="reset()">Reset</button>
 
 <script>
-const SCRIPT_URL = "https://docs.google.com/spreadsheets/d/1qm2SLfdhCxYwzCgZGfjbnjsjZJSA12vql4iakCvCaTI/edit?usp=sharing";
+const SHEET_API = "https://script.google.com/macros/s/AKfycbxPLACEHOLDER/exec";
 
-function goal(team){
-  fetch(`${SCRIPT_URL}?action=goal&team=${team}`);
+let time = 0;
+let interval = null;
+
+function updateClock() {
+  const m = String(Math.floor(time / 60)).padStart(2, "0");
+  const s = String(time % 60).padStart(2, "0");
+  document.getElementById("clock").innerText = `${m}:${s}`;
+  send({ time: `${m}:${s}` });
 }
-function run(v){
-  fetch(`${SCRIPT_URL}?action=run&value=${v}`);
+
+function start() {
+  if (!interval) interval = setInterval(() => {
+    time++;
+    updateClock();
+  }, 1000);
 }
-function resetGame(){
-  if(confirm("Spiel wirklich zurücksetzen?")){
-    fetch(`${SCRIPT_URL}?action=reset`);
-  }
+
+function stop() {
+  clearInterval(interval);
+  interval = null;
+}
+
+function reset() {
+  time = 0;
+  updateClock();
+}
+
+function add(field, value) {
+  send({ field, value });
+}
+
+function save() {
+  send({
+    home: document.getElementById("home").value,
+    away: document.getElementById("away").value
+  });
+}
+
+function send(data) {
+  fetch(SHEET_API, {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
 }
 </script>
 
 </body>
 </html>
-
