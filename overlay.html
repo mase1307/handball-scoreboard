@@ -2,63 +2,75 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap" rel="stylesheet">
+<title>Handball Scoreboard</title>
 
 <style>
 body {
-  margin:0;
-  background:transparent;
-  font-family:'Oswald', sans-serif;
+  margin: 0;
+  background: transparent;
+  font-family: Arial, sans-serif;
+  color: white;
 }
-.scoreboard {
-  position:absolute;
-  bottom:30px;
-  left:30px;
-  background:rgba(0,0,0,0.75);
-  color:white;
-  padding:16px 28px;
-  border-radius:14px;
-  font-size:42px;
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
-.team { min-width:120px; text-align:center; }
-.time { font-size:36px; opacity:0.9; }
-</style>
 
+#scoreboard {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  padding: 20px 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  font-size: 32px;
+}
+
+.team {
+  min-width: 160px;
+  text-align: center;
+}
+
+.score {
+  font-size: 48px;
+  font-weight: bold;
+}
+
+#timer {
+  font-size: 40px;
+  font-weight: bold;
+}
+</style>
 </head>
+
 <body>
 
-<div class="scoreboard" id="sb">Lädt…</div>
+<div id="scoreboard">
+  <div class="team" id="home">HOME</div>
+  <div class="score" id="scoreHome">0</div>
+  <div id="timer">00:00</div>
+  <div class="score" id="scoreAway">0</div>
+  <div class="team" id="away">AWAY</div>
+</div>
 
 <script>
-const CSV_URL = "https://docs.google.com/spreadsheets/d/1qm2SLfdhCxYwzCgZGfjbnjsjZJSA12vql4iakCvCaTI/edit?usp=sharing";
+const SHEET_URL = "https://opensheet.elk.sh/1qm2SLfdhCxYwzCgZGfjbnjsjZJSA12vql4iakCvCaTI/Sheet1";
 
-async function update(){
-  const r = (await (await fetch(CSV_URL)).text()).split("\n");
+async function loadData() {
+  const res = await fetch(SHEET_URL);
+  const data = await res.json();
+  const row = data[0];
 
-  const heim = r[0].split(",")[1];
-  const gast = r[1].split(",")[1];
-  const sec = parseInt(r[2].split(",")[1]);
-  const heimName = r[4].split(",")[1];
-  const gastName = r[5].split(",")[1];
-
-  const m = Math.floor(sec/60);
-  const s = String(sec%60).padStart(2,"0");
-
-  document.getElementById("sb").innerHTML =
-    `<div class="team">${heimName}</div>
-     <div>${heim} : ${gast}</div>
-     <div class="team">${gastName}</div>
-     <div class="time">${m}:${s}</div>`;
+  document.getElementById("home").innerText = row.home;
+  document.getElementById("away").innerText = row.away;
+  document.getElementById("scoreHome").innerText = row.scoreHome;
+  document.getElementById("scoreAway").innerText = row.scoreAway;
+  document.getElementById("timer").innerText = row.time;
 }
 
-update();
-setInterval(update, 2000);
+loadData();
+setInterval(loadData, 1000);
 </script>
 
 </body>
 </html>
-
